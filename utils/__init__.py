@@ -45,7 +45,7 @@ def select_authors (df, docentes):
 def report_journal (df, qualis_df):
     journal = df.loc[df['Tipo da produção'] == 'Artigo publicado em periódicos']
     qualis_dict = (pd.DataFrame(qualis_df['Qualis_Final'].to_numpy().tolist(), index=qualis_df['issn'])).to_dict()[0]
-    journal['qualis'] = [ qualis_dict[j] if j in qualis_dict else 'Sem classificação'
+    journal.loc[:, 'qualis'] = [ qualis_dict[j] if j in qualis_dict else 'Sem classificação'
                             for j in journal['ISSN Periódico'].to_list() ]
     return journal
 
