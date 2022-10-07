@@ -34,9 +34,15 @@ ppgi_df = select_authors(prod_df, docentes)
 journal = report_journal(ppgi_df, qualis_journal_df)
 proc = report_proc(ppgi_df, qualis_proc_df)
 master = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Dissertação de mestrado')]
+
+# removing Bioinformatics
+titles = [ title.lower() for title in master['Periódico'].to_list() ]
+master = master.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
+
 ic = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Iniciação Científica')]
 tcc = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Trabalho de conclusão de curso de graduação')]
 tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnica']
 
 prod_docente = prod_by_docente({ 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc': tcc, 'tec': tec }, docentes)
 print(prod_docente['Willian Massami Watanabe']['master']['Periódico'])
+print(master)
