@@ -1,6 +1,6 @@
 import sys, pandas as pd
 
-from utils import filter_interval, select_authors, report_journal, report_proc, prod_by_docente
+from utils import filter_interval, select_authors, report_journal, report_proc, prod_by_docente, get_students
 
 START = 2017
 INTERVAL = 4
@@ -33,11 +33,7 @@ prod_df = filter_interval(prod_df, start, end)
 ppgi_df = select_authors(prod_df, docentes)
 journal = report_journal(ppgi_df, qualis_journal_df)
 proc = report_proc(ppgi_df, qualis_proc_df)
-master = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Dissertação de mestrado')]
-
-# removing Bioinformatics
-titles = [ title.lower() for title in master['Periódico'].to_list() ]
-master = master.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
+(master, students) = get_students(ppgi_df)
 
 ic = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Iniciação Científica')]
 tcc = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Trabalho de conclusão de curso de graduação')]
@@ -45,4 +41,3 @@ tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnic
 
 prod_docente = prod_by_docente({ 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc': tcc, 'tec': tec }, docentes)
 print(prod_docente['Willian Massami Watanabe']['master']['Periódico'])
-print(master)

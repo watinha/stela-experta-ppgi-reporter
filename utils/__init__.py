@@ -93,7 +93,24 @@ def prod_by_docente (dfs, docentes):
     return result
 
 
+def get_students (df):
+    master = df.loc[(df['Tipo agrupador da produção'] == 'Orientação concluída') & (df['Tipo da produção'] == 'Dissertação de mestrado')]
 
+    # removing bioinformatics
+    titles = [ title.lower() for title in master['Periódico'].to_list() ]
+    master = master.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
 
+    students = df.loc[df['Tipo da produção'] == 'Dissertação de mestrado']
+    titles = [ title.lower() for title in students['Periódico'].to_list() ]
+    students = students.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
+    students_map = {}
+    for s in students['Periódico'].to_list():
+        s_low = s.lower()
+        name = s_low[:s_low.index(' universidade')]
+        if name not in students_map:
+            students_map[name] = True
 
+    students = list(students_map.keys())
+
+    return (master, students)
 
