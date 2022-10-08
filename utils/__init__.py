@@ -65,7 +65,7 @@ def report_proc (df, qualis_df):
     similarity_vec = cosine_similarity(proc_vec, qualis_vec)
     qualis_index = [ row.index(max(row)) for row in similarity_vec.tolist() ]
     proc['Proceedings name'] = [ qualis_text[i] for i in qualis_index ]
-    proc['Proceedings qualis'] = [ qualis_list[i] for i in qualis_index ]
+    proc['Proceedings qualis'] = [ qualis_list[i][2] for i in qualis_index ]
 
     return proc
 
