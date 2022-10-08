@@ -88,6 +88,7 @@ def prod_by_docente (dfs, docentes):
                     result[docente][prod_type].append(ind)
 
             result[docente][prod_type] = df.iloc[result[docente][prod_type], :]
+            result[docente][prod_type]['docente'] = docente
 
     return result
 
