@@ -1,6 +1,6 @@
 import sys, pandas as pd
 
-from utils import filter_interval, select_authors, report_journal, report_proc, prod_by_docente, get_students
+from utils import filter_interval, select_authors, report_journal, report_proc, prod_by_docente, get_students, prod_of_students
 
 START = 2017
 INTERVAL = 4
@@ -39,5 +39,9 @@ ic = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concl
 tcc = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Trabalho de conclusão de curso de graduação')]
 tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnica']
 
-prod_docente = prod_by_docente({ 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc': tcc, 'tec': tec }, docentes)
+prod_student = prod_of_students({ 'journal': journal, 'proc': proc, 'tec': tec }, students)
+prod_docente = prod_by_docente({ 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc': tcc, 'tec': tec, 'journal_student': prod_student['journal'], 'proc_student': prod_student['proc'], 'tec_student': prod_student['tec'] }, docentes)
 print(prod_docente['Willian Massami Watanabe']['master']['Periódico'])
+print(prod_docente['Willian Massami Watanabe']['journal_student']['ABNT'])
+print(prod_docente['Willian Massami Watanabe']['proc_student']['ABNT'])
+print(prod_docente['Willian Massami Watanabe']['tec_student']['ABNT'])

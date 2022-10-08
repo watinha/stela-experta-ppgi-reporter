@@ -2,6 +2,7 @@ import math, pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+author_attrs = [('Autor %d' % (i)) for i in range(1, 45)]
 
 def filter_interval (df, start, end):
     years = pd.to_numeric(df['Ano da produção'], errors='coerce')
@@ -26,7 +27,6 @@ def __search_author (authors, docente):
 
 
 def select_authors (df, docentes):
-    author_attrs = [('Autor %d' % (i)) for i in range(1, 45)]
     prod_authors = df[author_attrs].to_numpy().tolist()
     prod_ppgi = []
     for prod in prod_authors:
@@ -71,7 +71,6 @@ def report_proc (df, qualis_df):
 
 
 def prod_by_docente (dfs, docentes):
-    author_attrs = [('Autor %d' % (i)) for i in range(1, 45)]
     result = {}
 
     for prod_type in dfs.keys():
@@ -113,4 +112,27 @@ def get_students (df):
     students = list(students_map.keys())
 
     return (master, students)
+
+
+def prod_of_students (dfs, students):
+    result = {}
+
+    for prod_type in dfs.keys():
+        df = dfs[prod_type]
+        authors_list = df[author_attrs].to_numpy().tolist()
+        result[prod_type] = []
+
+        for ind, authors in enumerate(authors_list):
+            for student in students:
+                if __search_author(authors, student):
+                    result[prod_type].append(ind)
+                    break
+
+        result[prod_type] = df.iloc[result[prod_type], :]
+
+    return result
+
+
+
+
 
