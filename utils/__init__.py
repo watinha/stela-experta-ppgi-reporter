@@ -9,13 +9,18 @@ def filter_interval (df, start, end):
     result = df.loc[(years < end) & (years >= start)] # filter by year
     return result
 
-THRESHOLD = 0.8
+THRESHOLD = 0.6
 
 def __search_author (authors, docente):
-    authors_filtered = [ str(author) for author in authors]
+    tokens = (docente.lower().split(' '))
+    surname = tokens[-1]
+    other_names = tokens[0:-1]
+    abbreviations = ' '.join([ t[0] for t in other_names ])
 
-    vectorizer = CountVectorizer(binary=True, strip_accents='unicode')
-    docente_vec = vectorizer.fit_transform([docente])
+    authors_filtered = [ str(author) if (surname in str(author).lower()) else '' for author in authors]
+
+    vectorizer = CountVectorizer(binary=True, token_pattern=r'(?u)\b\w+\b', strip_accents='unicode')
+    docente_vec = vectorizer.fit_transform([ '%s %s' % (docente, abbreviations)])
     authors_vec = vectorizer.transform(authors_filtered)
 
     similarity_vec = cosine_similarity(docente_vec, authors_vec)
