@@ -54,6 +54,6 @@ all_prod = { 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc'
 prod_docente = prod_by_docente(all_prod, docentes)
 
 # reporting
-summary(report_folder, all_prod)
-by_professor(report_folder, prod_docente)
+summary(report_folder, all_prod, start=start, end=end)
+by_professor(report_folder, prod_docente, start=start, end=end)
 summary_by_professor(report_folder, prod_docente)

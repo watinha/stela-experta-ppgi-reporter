@@ -1,7 +1,47 @@
 import pandas as pd
 
 
-def __report_production (prod, writer):
+def __report_production (prod, writer, start=0, end=0):
+    bibliographic = {}
+    bibliographic['P'] = prod['journal']['qualis'].value_counts()
+    bibliographic['PA'] = prod['journal_student']['qualis'].value_counts()
+    bibliographic['C'] = prod['proc']['Proceedings qualis'].value_counts()
+    bibliographic['CA'] = prod['proc_student']['Proceedings qualis'].value_counts()
+
+    qualis = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4']
+    summary = pd.DataFrame(columns=['P', 'PA', 'C', 'CA'])
+    for p in summary.columns:
+        k = bibliographic[p].keys().tolist()
+        for q in qualis:
+            if q in k: summary.loc[q, p] = bibliographic[p][q]
+            else: summary.loc[q, p] = 0
+    summary.to_excel(writer, sheet_name='Bibliografia')
+
+    tec = prod['tec']['Tipo da produção'].value_counts()
+    tec_student = prod['tec_student']['Tipo da produção'].value_counts()
+    student_columns = tec_student.keys().tolist()
+    tec_summary = tec.to_frame().T
+    tec_summary.index = ['Professor']
+    for c in tec_summary.columns:
+        if c in student_columns: tec_summary.loc['Aluno', c] = tec_student[c]
+        else: tec_summary.loc['Aluno', c] = 0
+    tec_summary.to_excel(writer, sheet_name='Técnica')
+
+    master_count = prod['master']['Ano da produção'].value_counts()
+    ic_count = prod['ic']['Ano da produção'].value_counts()
+    tcc_count = prod['tcc']['Ano da produção'].value_counts()
+    years = list(range(start, end))
+    students_summary = pd.DataFrame(index=['Mestres', 'IC', 'TCC'], columns=years)
+    for y in years:
+        if str(y) in master_count.keys().tolist(): students_summary.loc['Mestres', y] = master_count[str(y)]
+        else: students_summary.loc['Mestres', y] = 0
+        if str(y) in ic_count.keys().tolist(): students_summary.loc['IC', y] = ic_count[str(y)]
+        else: students_summary.loc['IC', y] = 0
+        if str(y) in tcc_count.keys().tolist(): students_summary.loc['TCC', y] = tcc_count[str(y)]
+        else: students_summary.loc['TCC', y] = 0
+    students_summary.to_excel(writer, sheet_name='Orientações')
+
+
     prod['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
     prod['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
     prod['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
@@ -12,15 +52,17 @@ def __report_production (prod, writer):
     prod['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
     prod['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
 
-def summary (report_folder, prod):
-    with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writer:
-        __report_production(prod, writer)
 
-def by_professor (report_folder, prod_docente):
+
+def summary (report_folder, prod, start=0, end=0):
+    with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writer:
+        __report_production(prod, writer, start, end)
+
+def by_professor (report_folder, prod_docente, start=0, end=0):
     for professor in prod_docente.keys():
         name = ''.join(professor.split(' '))
         with pd.ExcelWriter('./output/%s/report-%s.xlsx' % (report_folder, name)) as writer:
-            __report_production(prod_docente[professor], writer)
+            __report_production(prod_docente[professor], writer, start, end)
 
 
 def summary_by_professor (report_folder, prod_docente):
