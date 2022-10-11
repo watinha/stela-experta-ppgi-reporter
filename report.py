@@ -58,10 +58,10 @@ with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writ
     master[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
     ic[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
     tcc[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
-    tec[['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
+    tec[['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
     prod_student['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
     prod_student['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
-    prod_student['tec'][['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
+    prod_student['tec'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
 
 
 for professor in prod_docente.keys():
@@ -72,10 +72,10 @@ for professor in prod_docente.keys():
         prod_docente[professor]['master'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
         prod_docente[professor]['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
         prod_docente[professor]['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
-        prod_docente[professor]['tec'][['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
+        prod_docente[professor]['tec'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
         prod_docente[professor]['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
         prod_docente[professor]['proc_student'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
-        prod_docente[professor]['tec_student'][['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
+        prod_docente[professor]['tec_student'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
 
 
 with pd.ExcelWriter('./output/%s/professor-report.xlsx' % (report_folder)) as writer:
@@ -88,20 +88,20 @@ with pd.ExcelWriter('./output/%s/professor-report.xlsx' % (report_folder)) as wr
             master_all = prod_docente[professor]['master'].loc[:, ['ABNT', 'Ano da produção', 'docente']]
             ic_all = prod_docente[professor]['ic'].loc[:, ['ABNT', 'Ano da produção', 'docente']]
             tcc_all = prod_docente[professor]['tcc'].loc[:, ['ABNT', 'Ano da produção', 'docente']]
-            tec_all = prod_docente[professor]['tec'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]
+            tec_all = prod_docente[professor]['tec'].loc[:, ['ABNT', 'Tipo da produção', 'Ano da produção', 'docente']]
             journal_student_all = prod_docente[professor]['journal_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]
             proc_student_all = prod_docente[professor]['proc_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]
-            tec_student_all = prod_docente[professor]['tec_student'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]
+            tec_student_all = prod_docente[professor]['tec_student'].loc[:, ['ABNT', 'Tipo da produção', 'Ano da produção', 'docente']]
         else:
             journal_all = pd.concat([journal_all, prod_docente[professor]['journal'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]])
             proc_all = pd.concat([proc_all, prod_docente[professor]['proc'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]])
             master_all = pd.concat([master_all, prod_docente[professor]['master'].loc[:, ['ABNT', 'Ano da produção', 'docente']]])
             ic_all = pd.concat([ic_all, prod_docente[professor]['ic'].loc[:, ['ABNT', 'Ano da produção', 'docente']]])
             tcc_all = pd.concat([tcc_all, prod_docente[professor]['tcc'].loc[:, ['ABNT', 'Ano da produção', 'docente']]])
-            tec_all = pd.concat([tec_all, prod_docente[professor]['tec'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]])
+            tec_all = pd.concat([tec_all, prod_docente[professor]['tec'].loc[:, ['ABNT', 'Tipo da produção', 'Ano da produção', 'docente']]])
             journal_student_all = pd.concat([journal_student_all, prod_docente[professor]['journal_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]])
             proc_student_all = pd.concat([proc_student_all, prod_docente[professor]['proc_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]])
-            tec_student_all = pd.concat([tec_student_all, prod_docente[professor]['tec_student'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]])
+            tec_student_all = pd.concat([tec_student_all, prod_docente[professor]['tec_student'].loc[:, ['ABNT', 'Tipo da produção', 'Ano da produção', 'docente']]])
 
     journal_all.to_excel(writer, sheet_name='Journal')
     proc_all.to_excel(writer, sheet_name='Proceedings')
