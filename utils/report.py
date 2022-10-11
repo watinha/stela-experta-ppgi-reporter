@@ -58,11 +58,35 @@ def summary (report_folder, prod, start=0, end=0):
     with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writer:
         __report_production(prod, writer, start, end)
 
+
 def by_professor (report_folder, prod_docente, start=0, end=0):
     for professor in prod_docente.keys():
         name = ''.join(professor.split(' '))
         with pd.ExcelWriter('./output/%s/report-%s.xlsx' % (report_folder, name)) as writer:
             __report_production(prod_docente[professor], writer, start, end)
+
+
+def summary_by_linha (report_folder, prod_docente, linhas_map, start=0, end=0):
+    results = {}
+    for professor in prod_docente.keys():
+        linha = linhas_map[professor]
+        prod = prod_docente[professor]
+        if linha not in results:
+            results[linha] = prod
+        else:
+            results[linha]['journal'] = pd.concat([results[linha]['journal'], prod['journal']])
+            results[linha]['proc'] = pd.concat([results[linha]['proc'], prod['proc']])
+            results[linha]['tec'] = pd.concat([results[linha]['tec'], prod['tec']])
+            results[linha]['master'] = pd.concat([results[linha]['master'], prod['master']])
+            results[linha]['ic'] = pd.concat([results[linha]['ic'], prod['ic']])
+            results[linha]['tcc'] = pd.concat([results[linha]['tcc'], prod['tcc']])
+            results[linha]['journal_student'] = pd.concat([results[linha]['journal_student'], prod['journal_student']])
+            results[linha]['proc_student'] = pd.concat([results[linha]['proc_student'], prod['proc_student']])
+            results[linha]['tec_student'] = pd.concat([results[linha]['tec_student'], prod['tec_student']])
+
+    for linha in results.keys():
+        with pd.ExcelWriter('./output/%s/linhas-%s-report.xlsx' % (report_folder, linha)) as writer:
+            __report_production(results[linha], writer, start, end)
 
 
 def summary_by_professor (report_folder, prod_docente):

@@ -1,16 +1,17 @@
-Alexandre L'Erario
-Cléber Gimenez Corrêa
-Érica Ferreira de Souza
-José Augusto Fabri
-Katia Romero Felizardo Scannavino
-Silvio Ricardo Rodrigues Sanches
-Willian Massami Watanabe
-André Yoshiaki Kashiwabara
-Danilo Sipoli Sanches
-Fabrício Martins Lopes
-Lucas Dias Hiera Sampaio
-Natássya Barlate Floro da Silva
-Pedro Henrique Bugatti
-Rodrigo Henrique Cunha Palácios
-Eduardo Filgueiras Damasceno
-Gabriel Costa Silva
+Nome,Linha
+Alexandre L'Erario,ES
+Cléber Gimenez Corrêa,ES
+Érica Ferreira de Souza,ES
+José Augusto Fabri,ES
+Katia Romero Felizardo Scannavino,ES
+Silvio Ricardo Rodrigues Sanches,ES
+Willian Massami Watanabe,ES
+André Yoshiaki Kashiwabara,IC
+Danilo Sipoli Sanches,IC
+Fabrício Martins Lopes,IC
+Lucas Dias Hiera Sampaio,IC
+Natássya Barlate Floro da Silva,IC
+Pedro Henrique Bugatti,IC
+Rodrigo Henrique Cunha Palácios,IC
+Eduardo Filgueiras Damasceno,ES
+Gabriel Costa Silva,ES

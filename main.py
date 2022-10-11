@@ -1,7 +1,7 @@
 import os, sys, pandas as pd
 
 from utils import filter_interval, select_authors, report_journal, report_proc, prod_by_docente, get_students, prod_of_students
-from utils.report import summary, by_professor, summary_by_professor
+from utils.report import summary, by_professor, summary_by_professor, summary_by_linha
 
 START = 2017
 INTERVAL = 4
@@ -34,7 +34,9 @@ except:
     sys.exit(1)
 
 prod_df = pd.read_csv(PRODUCAO_FILENAME)
-docentes = open(DOCENTES_FILENAME).read().split('\n')[:-1] # remove last empty
+docentes_df = pd.read_csv(DOCENTES_FILENAME, index_col='Nome')
+docentes = docentes_df.index.tolist()
+linhas_map = docentes_df.to_dict()['Linha']
 qualis_journal_df = pd.read_csv(QUALIS_PER_FILENAME)
 qualis_proc_df = pd.read_csv(QUALIS_CONF_FILENAME)
 
@@ -56,4 +58,5 @@ prod_docente = prod_by_docente(all_prod, docentes)
 # reporting
 summary(report_folder, all_prod, start=start, end=end)
 by_professor(report_folder, prod_docente, start=start, end=end)
-summary_by_professor(report_folder, prod_docente)
+#summary_by_professor(report_folder, prod_docente)
+summary_by_linha(report_folder, prod_docente, linhas_map, start=start, end=end)
