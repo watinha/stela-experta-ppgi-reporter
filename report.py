@@ -1,4 +1,4 @@
-import sys, pandas as pd
+import os, sys, pandas as pd
 
 from utils import filter_interval, select_authors, report_journal, report_proc, prod_by_docente, get_students, prod_of_students
 
@@ -23,6 +23,14 @@ if len(sys.argv) < 4:
 
 _, _, start, end = sys.argv
 start, end = int(start), int(end)
+report_folder = '%d-%d' % (start, end)
+
+try:
+    os.mkdir('./output/%s' % (report_folder))
+    print('report folder generated...')
+except:
+    print('directory not created')
+    sys.exit(1)
 
 prod_df = pd.read_csv(PRODUCAO_FILENAME)
 docentes = open(DOCENTES_FILENAME).read().split('\n')[:-1] # remove last empty
@@ -41,10 +49,69 @@ tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnic
 
 prod_student = prod_of_students({ 'journal': journal, 'proc': proc, 'tec': tec }, students)
 prod_docente = prod_by_docente({ 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc': tcc, 'tec': tec, 'journal_student': prod_student['journal'], 'proc_student': prod_student['proc'], 'tec_student': prod_student['tec'] }, docentes)
-print(prod_docente['Willian Massami Watanabe']['master']['Periódico'])
-print(prod_docente['Willian Massami Watanabe']['journal_student'][['ABNT', 'qualis']])
-print(prod_docente['Willian Massami Watanabe']['proc_student'][['ABNT', 'Proceedings name', 'Proceedings qualis']])
-print(prod_docente['Willian Massami Watanabe']['tec_student']['ABNT'])
+
+
+# general report
+with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writer:
+    journal[['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
+    proc[['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
+    master[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
+    ic[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
+    tcc[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
+    tec[['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
+    prod_student['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
+    prod_student['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
+    prod_student['tec'][['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
+
+
+for professor in prod_docente.keys():
+    name = ''.join(professor.split(' '))
+    with pd.ExcelWriter('./output/%s/report-%s.xlsx' % (report_folder, name)) as writer:
+        prod_docente[professor]['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
+        prod_docente[professor]['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
+        prod_docente[professor]['master'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
+        prod_docente[professor]['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
+        prod_docente[professor]['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
+        prod_docente[professor]['tec'][['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
+        prod_docente[professor]['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
+        prod_docente[professor]['proc_student'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
+        prod_docente[professor]['tec_student'][['ABNT', 'Subtipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
+
+
+with pd.ExcelWriter('./output/%s/professor-report.xlsx' % (report_folder)) as writer:
+    journal_all = None
+
+    for professor in prod_docente.keys():
+        if journal_all is None:
+            journal_all = prod_docente[professor]['journal'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]
+            proc_all = prod_docente[professor]['proc'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]
+            master_all = prod_docente[professor]['master'].loc[:, ['ABNT', 'Ano da produção', 'docente']]
+            ic_all = prod_docente[professor]['ic'].loc[:, ['ABNT', 'Ano da produção', 'docente']]
+            tcc_all = prod_docente[professor]['tcc'].loc[:, ['ABNT', 'Ano da produção', 'docente']]
+            tec_all = prod_docente[professor]['tec'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]
+            journal_student_all = prod_docente[professor]['journal_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]
+            proc_student_all = prod_docente[professor]['proc_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]
+            tec_student_all = prod_docente[professor]['tec_student'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]
+        else:
+            journal_all = pd.concat([journal_all, prod_docente[professor]['journal'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]])
+            proc_all = pd.concat([proc_all, prod_docente[professor]['proc'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]])
+            master_all = pd.concat([master_all, prod_docente[professor]['master'].loc[:, ['ABNT', 'Ano da produção', 'docente']]])
+            ic_all = pd.concat([ic_all, prod_docente[professor]['ic'].loc[:, ['ABNT', 'Ano da produção', 'docente']]])
+            tcc_all = pd.concat([tcc_all, prod_docente[professor]['tcc'].loc[:, ['ABNT', 'Ano da produção', 'docente']]])
+            tec_all = pd.concat([tec_all, prod_docente[professor]['tec'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]])
+            journal_student_all = pd.concat([journal_student_all, prod_docente[professor]['journal_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'qualis', 'docente']]])
+            proc_student_all = pd.concat([proc_student_all, prod_docente[professor]['proc_student'].loc[:, ['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis', 'docente']]])
+            tec_student_all = pd.concat([tec_student_all, prod_docente[professor]['tec_student'].loc[:, ['ABNT', 'Subtipo da produção', 'Ano da produção', 'docente']]])
+
+    journal_all.to_excel(writer, sheet_name='Journal')
+    proc_all.to_excel(writer, sheet_name='Proceedings')
+    master_all.to_excel(writer, sheet_name='Graduate')
+    ic_all.to_excel(writer, sheet_name='IC')
+    tcc_all.to_excel(writer, sheet_name='TCC')
+    journal_student_all.to_excel(writer, sheet_name='Journal Student')
+    proc_student_all.to_excel(writer, sheet_name='Proceedings Student')
+    tec_student_all.to_excel(writer, sheet_name='Tec Student')
+
 
 
 
