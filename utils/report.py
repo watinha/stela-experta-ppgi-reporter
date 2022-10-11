@@ -1,32 +1,26 @@
 import pandas as pd
 
 
+def __report_production (prod, writer):
+    prod['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
+    prod['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
+    prod['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
+    prod['proc_student'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
+    prod['tec'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
+    prod['tec_student'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
+    prod['master'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
+    prod['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
+    prod['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
+
 def summary (report_folder, prod):
     with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writer:
-        prod['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
-        prod['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
-        prod['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
-        prod['proc_student'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
-        prod['tec'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
-        prod['tec_student'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
-        prod['master'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
-        prod['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
-        prod['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
-
+        __report_production(prod, writer)
 
 def by_professor (report_folder, prod_docente):
     for professor in prod_docente.keys():
         name = ''.join(professor.split(' '))
         with pd.ExcelWriter('./output/%s/report-%s.xlsx' % (report_folder, name)) as writer:
-            prod_docente[professor]['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
-            prod_docente[professor]['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
-            prod_docente[professor]['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
-            prod_docente[professor]['proc_student'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
-            prod_docente[professor]['tec'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
-            prod_docente[professor]['tec_student'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
-            prod_docente[professor]['master'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='Graduate')
-            prod_docente[professor]['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
-            prod_docente[professor]['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
+            __report_production(prod_docente[professor], writer)
 
 
 def summary_by_professor (report_folder, prod_docente):
