@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def __report_production (prod, writer, start=0, end=0):
+def __report_bibliography (prod, writer):
     bibliographic = {}
     bibliographic['P'] = prod['journal']['qualis'].value_counts()
     bibliographic['PA'] = prod['journal_student']['qualis'].value_counts()
@@ -15,8 +15,10 @@ def __report_production (prod, writer, start=0, end=0):
         for q in qualis:
             if q in k: summary.loc[q, p] = bibliographic[p][q]
             else: summary.loc[q, p] = 0
-    summary.to_excel(writer, sheet_name='Bibliografia')
+    return summary
 
+
+def __report_tec (prod, writer):
     tec = prod['tec']['Tipo da produção'].value_counts()
     tec_student = prod['tec_student']['Tipo da produção'].value_counts()
     student_columns = tec_student.keys().tolist()
@@ -25,8 +27,10 @@ def __report_production (prod, writer, start=0, end=0):
     for c in tec_summary.columns:
         if c in student_columns: tec_summary.loc['Aluno', c] = tec_student[c]
         else: tec_summary.loc['Aluno', c] = 0
-    tec_summary.to_excel(writer, sheet_name='Técnica')
+    return tec_summary
 
+
+def __report_students (prod, writer, start, end):
     master_count = prod['master']['Ano da produção'].value_counts()
     ic_count = prod['ic']['Ano da produção'].value_counts()
     tcc_count = prod['tcc']['Ano da produção'].value_counts()
@@ -39,8 +43,16 @@ def __report_production (prod, writer, start=0, end=0):
         else: students_summary.loc['IC', y] = 0
         if str(y) in tcc_count.keys().tolist(): students_summary.loc['TCC', y] = tcc_count[str(y)]
         else: students_summary.loc['TCC', y] = 0
-    students_summary.to_excel(writer, sheet_name='Orientações')
+    return students_summary
 
+
+def __report_production (prod, writer, start=0, end=0):
+    summary = __report_bibliography(prod, writer)
+    summary.to_excel(writer, sheet_name='Bibliografia')
+    tec_summary = __report_tec(prod, writer)
+    tec_summary.to_excel(writer, sheet_name='Técnica')
+    students_summary = __report_students(prod, writer, start, end)
+    students_summary.to_excel(writer, sheet_name='Orientações')
 
     prod['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
     prod['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
