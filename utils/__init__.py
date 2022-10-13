@@ -50,15 +50,16 @@ def select_authors (df, docentes):
 def report_journal (df, qualis_df):
     journal = df.loc[df['Tipo da produção'] == 'Artigo publicado em periódicos']
     qualis_dict = (pd.DataFrame(qualis_df['Qualis_Final'].to_numpy().tolist(), index=qualis_df['issn'])).to_dict()[0]
+    issn = [ str(i) for i in journal['ISSN Periódico'].to_list() ]
     journal.loc[:, 'qualis'] = [ qualis_dict[j] if j in qualis_dict else 'Sem classificação'
-                            for j in journal['ISSN Periódico'].to_list() ]
+                            for j in issn ]
     return journal
 
 
 def report_proc (df, qualis_df):
     proc = df.loc[df['Tipo da produção'] == 'Trabalho publicado em anais de evento']
     proc = proc.loc[proc['Subtipo da produção'] == 'Completo']
-    proc_text = proc['Periódico'].to_list()
+    proc_text = [ str(t) for t in proc['Periódico'].to_list() ]
 
     qualis_list = qualis_df[['sigla', 'conferencia', 'Qualis_Final']].to_numpy().tolist()
     qualis_text = [ ('%s %s' % (q[0], q[1])) for q in qualis_list ]
@@ -98,16 +99,13 @@ def prod_by_docente (dfs, docentes):
     return result
 
 
-def get_students (df):
+def get_students (df, dfs):
     master = df.loc[(df['Tipo agrupador da produção'] == 'Orientação concluída') & (df['Tipo da produção'] == 'Dissertação de mestrado')]
 
     # removing bioinformatics
     titles = [ title.lower() for title in master['Periódico'].to_list() ]
-    master = master.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
+    students = master.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
 
-    students = df.loc[df['Tipo da produção'] == 'Dissertação de mestrado']
-    titles = [ title.lower() for title in students['Periódico'].to_list() ]
-    students = students.loc[[ (('bioinformática' not in t) and ('tecnológica' in t)) for t in titles ], :]
     students_map = {}
     for s in students['Periódico'].to_list():
         s_low = s.lower()
@@ -115,13 +113,36 @@ def get_students (df):
         if name not in students_map:
             students_map[name] = True
 
-    students = list(students_map.keys())
+    students_list = list(students_map.keys())
 
-    return (master, students)
+    (result, map_students_prod) = __prod_of_students(dfs, students_list)
+    journal = []
+    proc = []
+    tec = []
+
+    for s in students['Periódico'].to_list():
+        s_low = s.lower()
+        name = s_low[:s_low.index(' universidade')]
+        journal.append(map_students_prod[name]['journal'])
+        proc.append(map_students_prod[name]['proc'])
+        tec.append(map_students_prod[name]['tec'])
+
+    students['journal_count'] = journal
+    students['proceedings_count'] = proc
+    students['tec_count'] = tec
+
+    return (students, result)
 
 
-def prod_of_students (dfs, students):
+def __prod_of_students (dfs, students):
     result = {}
+    map_students_prod = {}
+
+    for student in students:
+        map_students_prod[student] = {}
+        for prod_type in dfs.keys():
+            map_students_prod[student][prod_type] = 0
+
 
     for prod_type in dfs.keys():
         df = dfs[prod_type]
@@ -132,11 +153,14 @@ def prod_of_students (dfs, students):
             for student in students:
                 if __search_author(authors, student):
                     result[prod_type].append(ind)
+
+                    map_students_prod[student][prod_type] += 1
+
                     break
 
         result[prod_type] = df.iloc[result[prod_type], :]
 
-    return result
+    return (result, map_students_prod)
 
 
 
