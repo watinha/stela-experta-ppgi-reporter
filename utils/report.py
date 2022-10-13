@@ -1,7 +1,10 @@
 import pandas as pd
 
 
-def __report_bibliography (prod, writer):
+qualis_weight = { 'A1': 1, 'A2': 0.875, 'A3': 0.75, 'A4': 0.625, 'B1': 0.5, 'B2': 0.2, 'B3': 0.1, 'B4': 0.05 }
+
+
+def __report_bibliography (prod, writer, n_professores, start, end):
     bibliographic = {}
     bibliographic['P'] = prod['journal']['qualis'].value_counts()
     bibliographic['PA'] = prod['journal_student']['qualis'].value_counts()
@@ -15,6 +18,18 @@ def __report_bibliography (prod, writer):
         for q in qualis:
             if q in k: summary.loc[q, p] = bibliographic[p][q]
             else: summary.loc[q, p] = 0
+
+    qualis = list(qualis_weight.values())
+    summary['Produção total'] = (summary['P'] + summary['C']) * qualis
+    summary['Produção anual'] = summary['Produção total'] / (end - start)
+    summary['Produção anual por professor'] = summary['Produção anual'] / n_professores
+    summary['Alunos total'] = (summary['PA'] + summary['CA']) * qualis
+    summary['Alunos anual'] = summary['Alunos total'] / (end - start)
+    summary['Alunos anual por professor'] = summary['Alunos anual'] / n_professores
+
+    summary.loc['Índice geral', :] = summary.sum(axis=0)
+    summary.loc['Índice restrito', :] = summary.loc[['A1', 'A2', 'A3', 'A4'], :].sum(axis=0)
+
     return summary
 
 
@@ -52,8 +67,8 @@ def __report_students (prod, writer, start, end):
     return students_summary
 
 
-def __report_production (prod, writer, start=0, end=0):
-    summary = __report_bibliography(prod, writer)
+def __report_production (prod, writer, n_professores, start=0, end=0):
+    summary = __report_bibliography(prod, writer, n_professores, start, end)
     summary.to_excel(writer, sheet_name='Bibliografia')
     tec_summary = __report_tec(prod, writer)
     tec_summary.to_excel(writer, sheet_name='Técnica')
@@ -73,25 +88,28 @@ def __report_production (prod, writer, start=0, end=0):
 
 
 
-def summary (report_folder, prod, start=0, end=0):
+def summary (report_folder, prod, n_professores, start=0, end=0):
     with pd.ExcelWriter('./output/%s/program-report.xlsx' % (report_folder)) as writer:
-        __report_production(prod, writer, start, end)
+        __report_production(prod, writer, n_professores, start, end)
 
 
 def by_professor (report_folder, prod_docente, start=0, end=0):
     for professor in prod_docente.keys():
         name = ''.join(professor.split(' '))
         with pd.ExcelWriter('./output/%s/report-%s.xlsx' % (report_folder, name)) as writer:
-            __report_production(prod_docente[professor], writer, start, end)
+            __report_production(prod_docente[professor], writer, 1, start, end)
 
 
 def summary_by_linha (report_folder, prod_docente, linhas_map, start=0, end=0):
     results = {}
+    count = {}
+
     for professor in prod_docente.keys():
         linha = linhas_map[professor]
         prod = prod_docente[professor]
         if linha not in results:
             results[linha] = prod
+            count[linha] = 1
         else:
             results[linha]['journal'] = pd.concat([results[linha]['journal'], prod['journal']])
             results[linha]['proc'] = pd.concat([results[linha]['proc'], prod['proc']])
@@ -102,9 +120,10 @@ def summary_by_linha (report_folder, prod_docente, linhas_map, start=0, end=0):
             results[linha]['journal_student'] = pd.concat([results[linha]['journal_student'], prod['journal_student']])
             results[linha]['proc_student'] = pd.concat([results[linha]['proc_student'], prod['proc_student']])
             results[linha]['tec_student'] = pd.concat([results[linha]['tec_student'], prod['tec_student']])
+            count[linha] += 1
 
     for linha in results.keys():
         with pd.ExcelWriter('./output/%s/linhas-%s-report.xlsx' % (report_folder, linha)) as writer:
-            __report_production(results[linha], writer, start, end)
+            __report_production(results[linha], writer, count[linha], start, end)
 
 
