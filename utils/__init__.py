@@ -119,6 +119,7 @@ def get_students (df, dfs):
     journal = []
     proc = []
     tec = []
+    qualis_prod = { 'A1': [], 'A2': [], 'A3': [], 'A4': [], 'B1': [], 'B2': [], 'B3': [], 'B4': [] }
 
     for s in students['Periódico'].to_list():
         s_low = s.lower()
@@ -126,10 +127,14 @@ def get_students (df, dfs):
         journal.append(map_students_prod[name]['journal'])
         proc.append(map_students_prod[name]['proc'])
         tec.append(map_students_prod[name]['tec'])
+        for q in qualis_prod.keys():
+            qualis_prod[q].append(map_students_prod[name][q])
 
     students['journal_count'] = journal
     students['proceedings_count'] = proc
     students['tec_count'] = tec
+    for q in qualis_prod.keys():
+        students[q] = qualis_prod[q]
 
     return (students, result)
 
@@ -137,16 +142,23 @@ def get_students (df, dfs):
 def __prod_of_students (dfs, students):
     result = {}
     map_students_prod = {}
+    qualis = ['A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4']
 
     for student in students:
         map_students_prod[student] = {}
         for prod_type in dfs.keys():
             map_students_prod[student][prod_type] = 0
+        for q in qualis:
+            map_students_prod[student][q] = 0
 
 
     for prod_type in dfs.keys():
         df = dfs[prod_type]
         authors_list = df[author_attrs].to_numpy().tolist()
+        if prod_type == 'journal':
+            qualis_list = df['qualis'].tolist()
+        if prod_type == 'proc':
+            qualis_list = df['Proceedings qualis'].tolist()
         result[prod_type] = []
 
         for ind, authors in enumerate(authors_list):
@@ -155,6 +167,10 @@ def __prod_of_students (dfs, students):
                     result[prod_type].append(ind)
 
                     map_students_prod[student][prod_type] += 1
+                    if (prod_type == 'journal' and qualis_list[ind] in qualis):
+                        map_students_prod[student][qualis_list[ind]] += 1
+                    if (prod_type == 'proc' and qualis_list[ind] in qualis):
+                        map_students_prod[student][qualis_list[ind]] += 1
 
                     break
 

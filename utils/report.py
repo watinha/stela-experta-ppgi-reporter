@@ -75,7 +75,7 @@ def __report_production (prod, writer, n_professores, start=0, end=0):
     students_summary = __report_students(prod, writer, start, end)
     students_summary.to_excel(writer, sheet_name='Orientações')
 
-    prod['master'][['ABNT', 'Ano da produção', 'journal_count', 'proceedings_count', 'tec_count']].to_excel(writer, sheet_name='Graduate')
+    prod['master'][['ABNT', 'Ano da produção', 'journal_count', 'proceedings_count', 'tec_count', 'A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4']].to_excel(writer, sheet_name='Graduate')
 
     prod['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
     prod['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
