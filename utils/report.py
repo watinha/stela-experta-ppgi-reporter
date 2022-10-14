@@ -51,13 +51,13 @@ def __report_students (prod, writer, start, end):
     tcc_count = prod['tcc']['Ano da produção'].value_counts()
     years = list(range(start, end))
     students_summary = pd.DataFrame(index=['Mestres', 'IC', 'TCC'], columns=years)
+    students_summary.loc['Mestres', :] = [ 0 for y in years ]
+    students_summary.loc['IC', :] = [ 0 for y in years ]
+    students_summary.loc['TCC', :] = [ 0 for y in years ]
     for y in years:
-        if str(y) in master_count.keys().tolist(): students_summary.loc['Mestres', y] = master_count[str(y)]
-        else: students_summary.loc['Mestres', y] = 0
-        if str(y) in ic_count.keys().tolist(): students_summary.loc['IC', y] = ic_count[str(y)]
-        else: students_summary.loc['IC', y] = 0
-        if str(y) in tcc_count.keys().tolist(): students_summary.loc['TCC', y] = tcc_count[str(y)]
-        else: students_summary.loc['TCC', y] = 0
+        if y in master_count.keys().tolist(): students_summary.loc['Mestres', y] = master_count[y]
+        if y in ic_count.keys().tolist(): students_summary.loc['IC', y] = ic_count[y]
+        if y in tcc_count.keys().tolist(): students_summary.loc['TCC', y] = tcc_count[y]
 
     total = students_summary.sum(axis=1)
     mean = students_summary.mean(axis=1)

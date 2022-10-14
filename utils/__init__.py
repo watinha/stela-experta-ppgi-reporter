@@ -2,7 +2,7 @@ import math, pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-author_attrs = [('Autor %d' % (i)) for i in range(1, 45)]
+author_attrs = [('Autor %d' % (i)) for i in range(1, 20)]
 
 def filter_interval (df, start, end):
     years = pd.to_numeric(df['Ano da produção'], errors='coerce')
@@ -99,7 +99,7 @@ def prod_by_docente (dfs, docentes):
     return result
 
 
-def get_students (df, dfs):
+def get_students (df, dfs, dfs_total):
     master = df.loc[(df['Tipo agrupador da produção'] == 'Orientação concluída') & (df['Tipo da produção'] == 'Dissertação de mestrado')]
 
     # removing bioinformatics
@@ -115,7 +115,8 @@ def get_students (df, dfs):
 
     students_list = list(students_map.keys())
 
-    (result, map_students_prod) = __prod_of_students(dfs, students_list)
+    (result, _) = __prod_of_students(dfs, students_list)
+    (_, map_students_prod) = __prod_of_students(dfs_total, students_list)
     journal = []
     proc = []
     tec = []

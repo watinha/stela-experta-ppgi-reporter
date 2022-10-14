@@ -45,17 +45,17 @@ ppgi_df = select_authors(prod_df, docentes)
 journal = report_journal(ppgi_df, qualis_journal_df)
 proc = report_proc(ppgi_df, qualis_proc_df)
 
+ic = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Iniciação Científica')]
+tcc = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Trabalho de conclusão de curso de graduação')]
+tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnica']
+
 total_df = filter_interval(df, 2016, datetime.datetime.now().year + 1)
 total_ppgi_df = select_authors(df, docentes)
 total_journal = report_journal(total_ppgi_df, qualis_journal_df)
 total_proc = report_proc(total_ppgi_df, qualis_proc_df)
 total_tec = total_ppgi_df.loc[total_ppgi_df['Tipo agrupador da produção'] == 'Produção técnica']
 
-ic = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Iniciação Científica')]
-tcc = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Trabalho de conclusão de curso de graduação')]
-tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnica']
-
-(master, prod_student) = get_students(ppgi_df, { 'journal': total_journal, 'proc': total_proc, 'tec': total_tec })
+(master, prod_student) = get_students(ppgi_df, { 'journal': journal, 'proc': proc, 'tec': tec }, { 'journal': total_journal, 'proc': total_proc, 'tec': total_tec })
 
 all_prod = { 'journal': journal, 'proc': proc, 'master': master, 'ic': ic, 'tcc': tcc, 'tec': tec, 'journal_student': prod_student['journal'], 'proc_student': prod_student['proc'], 'tec_student': prod_student['tec'] }
 prod_docente = prod_by_docente(all_prod, docentes)
