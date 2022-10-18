@@ -1,4 +1,5 @@
 Nome,Linha
+André Takeshi Endo,ES
 Alexandre L'Erario,ES
 Cléber Gimenez Corrêa,ES
 Érica Ferreira de Souza,ES
@@ -6,12 +7,14 @@ José Augusto Fabri,ES
 Katia Romero Felizardo Scannavino,ES
 Silvio Ricardo Rodrigues Sanches,ES
 Willian Massami Watanabe,ES
+Alexandre Rossi Paschoal,IC
 André Yoshiaki Kashiwabara,IC
 Danilo Sipoli Sanches,IC
 Fabrício Martins Lopes,IC
 Lucas Dias Hiera Sampaio,IC
 Natássya Barlate Floro da Silva,IC
 Pedro Henrique Bugatti,IC
+Priscila Tiemi Maeda Saito,IC
 Rodrigo Henrique Cunha Palácios,IC
 Eduardo Filgueiras Damasceno,ES
 Gabriel Costa Silva,ES

@@ -49,7 +49,7 @@ def __report_students (prod, writer, start, end):
     master_count = prod['master']['Ano da produção'].value_counts()
     ic_count = prod['ic']['Ano da produção'].value_counts()
     tcc_count = prod['tcc']['Ano da produção'].value_counts()
-    years = list(range(start, end))
+    years = [ str(y) for y in list(range(start, end)) ]
     students_summary = pd.DataFrame(index=['Mestres', 'IC', 'TCC'], columns=years)
     students_summary.loc['Mestres', :] = [ 0 for y in years ]
     students_summary.loc['IC', :] = [ 0 for y in years ]

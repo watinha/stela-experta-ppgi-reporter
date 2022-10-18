@@ -49,7 +49,7 @@ ic = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concl
 tcc = ppgi_df.loc[(ppgi_df['Tipo agrupador da produção'] == 'Orientação concluída') & (ppgi_df['Tipo da produção'] == 'Trabalho de conclusão de curso de graduação')]
 tec = ppgi_df.loc[ppgi_df['Tipo agrupador da produção'] == 'Produção técnica']
 
-total_df = filter_interval(df, 2016, datetime.datetime.now().year + 1)
+total_df = filter_interval(df, 2015, end)
 total_ppgi_df = select_authors(df, docentes)
 total_journal = report_journal(total_ppgi_df, qualis_journal_df)
 total_proc = report_proc(total_ppgi_df, qualis_proc_df)
