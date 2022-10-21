@@ -49,7 +49,13 @@ def __report_students (prod, writer, start, end):
     master_count = prod['master']['Ano da produção'].value_counts()
     ic_count = prod['ic']['Ano da produção'].value_counts()
     tcc_count = prod['tcc']['Ano da produção'].value_counts()
-    years = [ str(y) for y in list(range(start, end)) ]
+
+    l = master_count.keys().tolist()
+    if len(l) > 0 and isinstance(l[0], str):
+        years = [ str(y) for y in list(range(start, end)) ]
+    else:
+        years = list(range(start, end))
+
     students_summary = pd.DataFrame(index=['Mestres', 'IC', 'TCC'], columns=years)
     students_summary.loc['Mestres', :] = [ 0 for y in years ]
     students_summary.loc['IC', :] = [ 0 for y in years ]
@@ -75,16 +81,16 @@ def __report_production (prod, writer, n_professores, start=0, end=0):
     students_summary = __report_students(prod, writer, start, end)
     students_summary.to_excel(writer, sheet_name='Orientações')
 
-    prod['master'][['ABNT', 'Ano da produção', 'journal_count', 'proceedings_count', 'tec_count', 'A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4']].to_excel(writer, sheet_name='Graduate')
+    prod['master'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção', 'journal_count', 'proceedings_count', 'tec_count', 'A1', 'A2', 'A3', 'A4', 'B1', 'B2', 'B3', 'B4']].to_excel(writer, sheet_name='Graduate')
 
-    prod['journal'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
-    prod['journal_student'][['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
-    prod['proc'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
-    prod['proc_student'][['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
-    prod['tec'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
-    prod['tec_student'][['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
-    prod['ic'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
-    prod['tcc'][['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
+    prod['journal'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Journal')
+    prod['journal_student'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção', 'Periódico', 'qualis']].to_excel(writer, sheet_name='Student-Journal')
+    prod['proc'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Proceedings')
+    prod['proc_student'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção', 'Periódico', 'Proceedings qualis']].to_excel(writer, sheet_name='Student-Proceedings')
+    prod['tec'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Tec')
+    prod['tec_student'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Tipo da produção', 'Ano da produção']].to_excel(writer, sheet_name='Student-Tec')
+    prod['ic'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='IC')
+    prod['tcc'].drop_duplicates(subset=['Título da produção'])[['ABNT', 'Ano da produção']].to_excel(writer, sheet_name='TCC')
 
 
 
